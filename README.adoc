@@ -6,8 +6,10 @@ CDC Demo using Kafka and Debezium
 
 Tested with:
 
-* AMQ Streams 1.6.2
-* OpenShift 4.7.2
+* AMQ Streams 1.7
+* OpenShift 4.8.3
+
+NOTE: Make sure you have the correct oc version. Run `oc version` to see if the version is 4.8.3.
 
 == Demo
 
@@ -132,11 +134,11 @@ spec:
 ----
 oc new-app --name=mysql quay.io/debezium/example-mysql:latest -n $DEMO_NAMESPACE
 
+# If the following command fails, try running using deploymentconfig instead
+# Eg: oc set env dc/mysql ...
 oc set env deploy/mysql MYSQL_ROOT_PASSWORD=debezium  MYSQL_USER=mysqluser MYSQL_PASSWORD=mysqlpw -n $DEMO_NAMESPACE
 
-export POD_MYSQL=$(oc -n $DEMO_NAMESPACE get pods -o name -l app=mysql)
-
-oc -n $DEMO_NAMESPACE exec $POD_MYSQL -- mysql -u mysqluser -pmysqlpw inventory
+export POD_MYSQL=$(oc -n $DEMO_NAMESPACE get pods -o name -l app=mysql | cut -d '/' -f2)
 
 oc -n $DEMO_NAMESPACE exec $POD_MYSQL -- mysql -u mysqluser -pmysqlpw inventory -Bse 'show tables;'
 
